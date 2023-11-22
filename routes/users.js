@@ -13,7 +13,7 @@ const {
 router.get("/", async function (req, res, next) {
   let user = await db["users"].findAll({
     raw: true,
-    where: { firstname: "Andrew", lastname: "Tate" },
+    where: {},
   });
   sendresp(res, messages.SUCCESS, null, { user });
 });
