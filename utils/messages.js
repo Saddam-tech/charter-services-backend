@@ -4,6 +4,10 @@ const messages = {
   NOT_FOUND: "DATA-NOT-FOUND!",
   DUBLICATE_DATA: "DUBLICATE-DATA!",
   LOGOUT: "USER-LOGOUT!",
+
+  // order
+  NEW_ORDER_SUCCESS: "NEW ORDER CREATED!",
+  NEW_ORDER_ERROR: "FAILED TO CREATE NEW ORDER!",
 };
 
 module.exports = { messages };
