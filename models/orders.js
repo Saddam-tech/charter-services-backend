@@ -12,7 +12,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       createdat: {
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: false,
         defaultValue: sequelize.fn("current_timestamp"),
       },
       updatedat: {
@@ -21,11 +21,11 @@ module.exports = function (sequelize, DataTypes) {
       },
       active: {
         type: DataTypes.INTEGER(4),
-        allowNull: true,
+        allowNull: false,
       },
       userid: {
         type: DataTypes.STRING(255),
-        allowNull: true,
+        allowNull: false,
       },
       orderid: {
         type: DataTypes.STRING(255),
@@ -44,7 +44,7 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
       },
       n_ppl: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(60),
         allowNull: true,
       },
       pickup_location: {

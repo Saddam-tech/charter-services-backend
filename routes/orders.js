@@ -33,17 +33,20 @@ router.post("/", async function (req, res, next) {
   } = req.body;
   try {
     let user;
-    user = await db["orders"].findOne({
+    user = await db["users"].findOne({
       raw: true,
       where: {
         firstname,
         lastname,
+        email,
+        phonenumber,
       },
     });
     if (user) {
     } else {
       let userid = uuidv4();
       let orderid = uuidv4();
+      console.log({ body: req.body, userid, orderid });
       let order = await db["orders"].create({
         active: 1,
         userid,
@@ -66,6 +69,7 @@ router.post("/", async function (req, res, next) {
         userid,
       });
       // send a telegram message here ...
+
       sendresp(res, messages.NEW_ORDER_SUCCESS, null, { order, user });
     }
   } catch (err) {
