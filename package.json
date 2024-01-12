@@ -19,6 +19,7 @@
     "lodash": "^4.17.21",
     "mariadb": "^3.2.2",
     "morgan": "~1.9.1",
+    "node-telegram-bot-api": "^0.64.0",
     "sequelize": "^6.35.1",
     "uuid": "^9.0.1"
   }
