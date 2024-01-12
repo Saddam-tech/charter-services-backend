@@ -46,7 +46,6 @@ router.post("/", async function (req, res, next) {
     } else {
       let userid = uuidv4();
       let orderid = uuidv4();
-      console.log({ body: req.body, userid, orderid });
       let order = await db["orders"].create({
         active: 1,
         userid,
@@ -70,6 +69,8 @@ router.post("/", async function (req, res, next) {
       });
       // send a telegram message here ...
 
+      console.log("INSERTING INTO ORDERS, USERS TABLE...");
+      console.log({ order: order.dataValues, user: user.dataValues });
       sendresp(res, messages.NEW_ORDER_SUCCESS, null, { order, user });
     }
   } catch (err) {

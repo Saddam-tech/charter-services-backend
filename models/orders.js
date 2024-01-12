@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
-    "users",
+    "orders",
     {
       id: {
         autoIncrement: true,
@@ -66,7 +66,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       sequelize,
-      tableName: "users",
+      tableName: "orders",
     }
   );
 };
