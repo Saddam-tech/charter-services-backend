@@ -8,6 +8,10 @@ const messages = {
   // order
   NEW_ORDER_SUCCESS: "NEW ORDER CREATED!",
   NEW_ORDER_ERROR: "FAILED TO CREATE NEW ORDER!",
+
+  // telegram bot
+  WELCOME: (name) => `Welcome ${name} 😃  
+I will be notifying you of the orders coming in to SCHS!`,
 };
 
 module.exports = { messages };

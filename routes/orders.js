@@ -71,7 +71,6 @@ router.post("/", async function (req, res, next) {
         active: 1,
         userid,
       });
-      // send a telegram message here ...
       console.log("INSERTING INTO ORDERS, USERS TABLE...");
       console.log({ order: order.dataValues, user: user.dataValues });
       sendresp(res, messages.NEW_ORDER_SUCCESS, null, { order, user });
@@ -79,7 +78,7 @@ router.post("/", async function (req, res, next) {
       telegram_bot.sendMessage(
         chat_id,
         `
-        New Test Order: 
+        New Order: 
           type: ${type},
           Service Date: ${date},
           Service time: ${time},
