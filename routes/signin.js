@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { messages } = require("../utils/messages");
 const { senderr, sendresp } = require("../utils/rest");
-const db = require("../models");
 const { createJWT } = require("../utils/util");
 
 /* POST admin-signin */

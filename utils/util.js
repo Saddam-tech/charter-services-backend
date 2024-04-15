@@ -2,8 +2,6 @@ const { v5: uuidv5 } = require("uuid");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET;
-require("dotenv").config();
-
 // jwt authentication handlers
 
 async function createJWT({ userinfo, jfilter = {} }) {

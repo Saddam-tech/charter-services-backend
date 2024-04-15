@@ -1,3 +1,4 @@
+require("dotenv").config();
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
@@ -10,7 +11,6 @@ const usersRouter = require("./routes/users");
 const signinRouter = require("./routes/signin");
 const cors = require("cors");
 const app = express();
-require("dotenv").config();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
