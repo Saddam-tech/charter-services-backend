@@ -1,14 +1,17 @@
 const { v5: uuidv5 } = require("uuid");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const secretKey = process.env.JWT_SECRET;
 require("dotenv").config();
+
+// jwt authentication handlers
 
 async function createJWT({ userinfo, jfilter = {} }) {
   if (userinfo) {
   } else {
-    userinfo = await db["admin-users"].findOne({
+    userinfo = await db["admin_accounts"].findOne({
       where: { ...jfilter },
-      attributes: ["id", "active", "uuid"],
+      attributes: ["id", "firstname", "lastname", "username", "active", "uuid"],
       raw: true,
     });
   }
@@ -22,18 +25,30 @@ async function createJWT({ userinfo, jfilter = {} }) {
       type: "JWT",
       ...userinfo,
     },
-    process.env.JWT_SECRET,
+    secretKey,
     {
       expiresIn, // : "48h", // 3h",      // expiresIn: '24h',
       issuer: "SCHS-EXPRESS-BACKEND",
     }
   );
-  console.log("SECRET", process.env.JWT_SECRET);
   return {
     token,
     myinfo: userinfo,
   };
 }
+
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+  jwt.verify(token, secretKey, (err, userinfo) => {
+    if (err) return res.sendStatus(403); // Invalid Token
+    req.userinfo = userinfo;
+    next();
+  });
+}
+
+//
 
 const create_uuid_via_namespace = (str) =>
   uuidv5(str, Array.from(Array(16).keys()));
@@ -63,4 +78,5 @@ module.exports = {
   generaterandomstr,
   generaterandomhex,
   createJWT,
+  verifyJWT,
 };
