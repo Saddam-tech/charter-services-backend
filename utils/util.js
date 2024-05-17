@@ -2,6 +2,7 @@ const { v5: uuidv5 } = require("uuid");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET;
+const crypto = require("crypto");
 // jwt authentication handlers
 
 async function createJWT({ userinfo, jfilter = {} }) {
@@ -71,10 +72,15 @@ const generaterandomhex = (length) => {
   return result;
 };
 
+function generate_uuid_hash(bytes = 32) {
+  crypto.randomBytes(bytes).toString("hex");
+}
+
 module.exports = {
   create_uuid_via_namespace,
   generaterandomstr,
   generaterandomhex,
   createJWT,
   verifyJWT,
+  generate_uuid_hash,
 };

@@ -14,7 +14,7 @@ router.post("/signin", async function (req, res) {
   const accessToken = await createJWT({ jfilter: { username, password } });
   if (accessToken) {
     console.log(messages.ADMIN_LOGIN, { username, password });
-    sendresp(res, messages.SUCCESS, null, accessToken);
+    sendresp(res, messages.SUCCESS, 200, accessToken);
   } else {
     console.log(messages.USER_NOT_FOUND, { username, password });
     senderr(res, messages.USER_NOT_FOUND);
