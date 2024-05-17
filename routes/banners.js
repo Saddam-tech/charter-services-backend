@@ -31,7 +31,6 @@ const s3 = new S3Client({
 router.post("/new", auth, upload.single("file"), async function (req, res) {
   let { id, username, uuid: useruuid } = req.decoded;
   let { sequence, section, active } = req.body;
-  console.log({ sequence, section, active, file: req.file });
   if (!id || !username || !useruuid) {
     senderr(res, messages.USER_NOT_FOUND, null);
     return;
@@ -49,7 +48,7 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
     params = {
       Bucket: bucket_name,
       Key: uuid,
-      Body: file.data,
+      Body: file.buffer,
       ContentType: file.mimetype,
     };
     command = new PutObjectCommand(params);
@@ -62,6 +61,7 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
       section,
       active,
     });
+    sendresp(res, messages.SUCCESS, 200);
   }
 });
 
