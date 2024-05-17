@@ -72,7 +72,7 @@ const generaterandomhex = (length) => {
   return result;
 };
 
-function generate_uuid_hash(bytes = 32) {
+function generate_uuid_hash(bytes = 16) {
   return crypto.randomBytes(bytes).toString("hex");
 }
 

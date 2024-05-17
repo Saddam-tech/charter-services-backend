@@ -54,8 +54,12 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
     command = new PutObjectCommand(params);
     await s3.send(command);
     console.log("File upload completed!", { params });
+    const image_name =
+      req.file?.originalname.length > 25
+        ? req.file?.originalname.slice(0, 25)
+        : req.file?.originalname;
     await db["banners"].create({
-      name: req.file?.originalname,
+      name: image_name,
       uuid,
       sequence,
       section,
