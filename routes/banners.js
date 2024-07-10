@@ -70,27 +70,20 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
   }
 });
 
-router.get("/all", auth, async function (req, res) {
+router.get("/all/:section", auth, async function (req, res) {
   try {
     let { uuid } = req.decoded;
-    let { section } = req.body;
+    let { section } = req.params;
     if (!uuid) {
       senderr(res, messages.ARG_MISSING);
       return;
     }
-    let response;
-    if (section) {
-      response = await db["banners"].findAll({
-        raw: true,
-        where: {
-          section,
-        },
-      });
-    } else {
-      response = await db["banners"].findAll({
-        raw: true,
-      });
-    }
+    let response = await db["banners"].findAll({
+      raw: true,
+      where: {
+        section,
+      },
+    });
     let objectParams, objectCommand, urlToS3;
     for (let el of response) {
       objectParams = {
