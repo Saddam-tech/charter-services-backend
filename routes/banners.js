@@ -12,6 +12,7 @@ const {
   GetObjectCommand,
 } = require("@aws-sdk/client-s3");
 const multer = require("multer");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -66,6 +67,44 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
       active,
     });
     sendresp(res, messages.SUCCESS, 200);
+  }
+});
+
+router.get("/all", auth, async function (req, res) {
+  try {
+    let { uuid } = req.decoded;
+    let { section } = req.body;
+    if (!uuid) {
+      senderr(res, messages.ARG_MISSING);
+      return;
+    }
+    let response;
+    if (section) {
+      response = await db["banners"].findAll({
+        raw: true,
+        where: {
+          section,
+        },
+      });
+    } else {
+      response = await db["banners"].findAll({
+        raw: true,
+      });
+    }
+    let objectParams, objectCommand, urlToS3;
+    for (let el of response) {
+      objectParams = {
+        Bucket: bucket_name,
+        Key: el.uuid,
+      };
+      objectCommand = new GetObjectCommand(objectParams);
+      urlToS3 = await getSignedUrl(s3, objectCommand, { expiresIn: 3600 });
+      el.urlToS3 = urlToS3;
+    }
+    sendresp(res, messages.SUCCESS, 200, { response, count: response.length });
+    return;
+  } catch (err) {
+    senderr(res, messages.ERROR, 500);
   }
 });
 
