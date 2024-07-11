@@ -38,6 +38,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER(3),
         allowNull: false,
       },
+      active: {
+        type: DataTypes.STRING(200),
+        allowNull: true,
+      },
     },
     {
       sequelize,
