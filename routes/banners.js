@@ -94,7 +94,7 @@ router.delete("/:uuid", auth, async function (req, res) {
       const command = new DeleteObjectCommand(params);
       s3.send(command)
         .then((data) => {
-          console.log({ data });
+          console.log({ ["DELETE-SUCCESS"]: data });
         })
         .catch((err) => {
           if (err) {
