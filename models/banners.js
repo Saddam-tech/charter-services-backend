@@ -8,12 +8,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      created_at: {
+      createdat: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: sequelize.fn("current_timestamp"),
       },
-      updated_at: {
+      updatedat: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: sequelize.fn("current_timestamp"),
@@ -38,7 +38,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER(3),
         allowNull: false,
       },
-      active: {
+      text: {
+        type: DataTypes.STRING(200),
+        allowNull: true,
+      },
+      head: {
         type: DataTypes.STRING(200),
         allowNull: true,
       },

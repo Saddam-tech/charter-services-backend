@@ -31,7 +31,7 @@ const s3 = new S3Client({
 
 router.post("/new", auth, upload.single("file"), async function (req, res) {
   let { id, username, uuid: useruuid } = req.decoded;
-  let { sequence, section, text, active } = req.body;
+  let { sequence, section, head, text, active } = req.body;
   if (!id || !username || !useruuid) {
     senderr(res, messages.USER_NOT_FOUND, null);
     return;
@@ -65,22 +65,24 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
       sequence,
       section,
       active,
+      head,
       text,
     });
     sendresp(res, messages.SUCCESS, 200);
   }
 });
 
-router.get("/all/:section", async function (req, res) {
+router.get("/all", async function (req, res) {
   try {
-    let { section } = req.params;
-    let response = await db["banners"].findAll({
+    let { section } = req.query;
+    let queryOptions = {
       raw: true,
       order: [["id", "DESC"]],
-      where: {
-        section,
-      },
-    });
+    };
+    if (section) {
+      queryOptions.where = { section };
+    }
+    let response = await db["banners"].findAll(queryOptions);
     let objectParams, objectCommand, urlToS3;
     for (let el of response) {
       objectParams = {
