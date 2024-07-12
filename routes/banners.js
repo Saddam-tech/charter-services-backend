@@ -10,6 +10,7 @@ const {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } = require("@aws-sdk/client-s3");
 const multer = require("multer");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
@@ -69,6 +70,46 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
       text,
     });
     sendresp(res, messages.SUCCESS, 200);
+  }
+});
+
+router.delete("/:uuid", auth, async function (req, res) {
+  try {
+    let { uuid } = req.params;
+    let { id, username, uuid: useruuid } = req.decoded;
+    if (!id || !username || !useruuid) {
+      senderr(res, messages.USER_NOT_FOUND, null);
+      return;
+    }
+    if (!uuid) {
+      senderr(res, messages.NOT_FOUND, null);
+      return;
+    }
+    let item = await db["banners"].findOne({ raw: true, where: { uuid } });
+    if (item) {
+      const params = {
+        Bucket: bucket_name,
+        Key: item.uuid,
+      };
+      const command = new DeleteObjectCommand(params);
+      s3.send(command)
+        .then((data) => {
+          console.log({ data });
+        })
+        .catch((err) => {
+          if (err) {
+            console.log("Error deleting data from S3:", err);
+            senderr(res, messages.S3_UPLOAD_ERROR, 500);
+          }
+        });
+      await db["banners"].destroy({ where: { uuid } });
+      sendresp(res, messages.DELETE_SUCCESS, 200, { uuid });
+    } else {
+      senderr(res, messages.NOT_FOUND, 500, { uuid });
+    }
+  } catch (err) {
+    console.log(err);
+    senderr(res, messages.ERROR, 500);
   }
 });
 
