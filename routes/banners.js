@@ -133,6 +133,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
             item[key] = value;
           }
         }
+        item.save();
       }
     } else {
       senderr(res, messages.NOT_FOUND, null);
