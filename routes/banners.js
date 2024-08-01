@@ -127,13 +127,18 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
     }
     let item = await db["banners"].findOne({ raw: true, where: { uuid } });
     if (item) {
-      if (Object.entries(req.body).length > 0) {
-        for (let [key, value] of Object.entries(req.body)) {
-          if (key) {
-            item[key] = value;
+      try {
+        if (Object.entries(req.body).length > 0) {
+          for (let [key, value] of Object.entries(req.body)) {
+            if (key) {
+              item[key] = value;
+            }
           }
+          await item.update();
         }
-        await item.save();
+      } catch (err) {
+        senderr(res, messages.ERROR, null);
+        console.log(err);
       }
     } else {
       senderr(res, messages.NOT_FOUND, null);
