@@ -134,7 +134,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
               item[key] = value;
             }
           }
-          await item.update();
+          await db["banners"].update({ ...item }, { where: { uuid } });
         }
       } catch (err) {
         senderr(res, messages.ERROR, null);
