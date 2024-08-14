@@ -143,7 +143,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
       return;
     }
     if (req.file) {
-      let file, params, uuid, command;
+      let file, params, command;
       file = req.file;
       params = {
         Bucket: bucket_name,
@@ -178,6 +178,30 @@ router.get("/all", async function (req, res) {
       urlToS3 = await getSignedUrl(s3, objectCommand, { expiresIn: 3600 });
       el.urlToS3 = urlToS3;
     }
+    sendresp(res, messages.SUCCESS, 200, { response, count: response.length });
+    return;
+  } catch (err) {
+    senderr(res, messages.ERROR, 500);
+  }
+});
+
+router.get("/:uuid", async function (req, res) {
+  try {
+    const { uuid } = req.params;
+    let queryOptions = {
+      raw: true,
+      where: { uuid },
+      order: [["id", "DESC"]],
+    };
+    let response = await db["blogs"].findOne(queryOptions);
+    let objectParams, objectCommand, urlToS3;
+    objectParams = {
+      Bucket: bucket_name,
+      Key: response.uuid,
+    };
+    objectCommand = new GetObjectCommand(objectParams);
+    urlToS3 = await getSignedUrl(s3, objectCommand, { expiresIn: 3600 });
+    response.urlToS3 = urlToS3;
     sendresp(res, messages.SUCCESS, 200, { response, count: response.length });
     return;
   } catch (err) {

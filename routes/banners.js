@@ -145,7 +145,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
       return;
     }
     if (req.file) {
-      let file, params, uuid, command;
+      let file, params, command;
       file = req.file;
       params = {
         Bucket: bucket_name,
