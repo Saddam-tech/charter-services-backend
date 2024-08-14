@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
-    "banners",
+    "blogs",
     {
       id: {
         autoIncrement: true,
@@ -26,14 +26,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      sequence: {
-        type: DataTypes.STRING(60),
-        allowNull: false,
-      },
-      section: {
-        type: DataTypes.STRING(60),
-        allowNull: false,
-      },
       active: {
         type: DataTypes.INTEGER(3),
         allowNull: false,
@@ -49,7 +41,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       sequelize,
-      tableName: "banners",
+      tableName: "blogs",
       timestamps: false,
     }
   );

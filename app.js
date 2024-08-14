@@ -4,12 +4,14 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const { sequelize } = require("./models");
 
 const indexRouter = require("./routes/index");
 const ordersRouter = require("./routes/orders");
 const usersRouter = require("./routes/users");
 const signinRouter = require("./routes/signin");
 const bannerRouter = require("./routes/banners");
+const blogsRouter = require("./routes/blogs");
 const cors = require("cors");
 const app = express();
 // view engine setup
@@ -29,10 +31,26 @@ app.use("/admin", signinRouter);
 
 app.use("/banners", bannerRouter);
 
+app.use("/blogs", blogsRouter);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
+
+const syncDB = process.env.SYNC_DB === "true";
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Database connected!");
+    if (syncDB) {
+      return sequelize.sync({ alter: true });
+    }
+  })
+  .catch((err) => {
+    console.log("Couldn't connect to the database! ", err);
+  });
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -44,5 +62,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+require("./models/index");
 
 module.exports = app;

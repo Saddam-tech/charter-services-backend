@@ -2,44 +2,18 @@
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
-const basename = path.basename(__filename); // const env = 'production' // 'developmentDesktop20191004' //  //   // process.env.NODE_ENV ||
-const env = "development"; //test 'developmentpc' //  // 'development'// 'production' //
-const config = require("../configs/dbconfig.json")[env]; // ./apiServe // __dirname
-// let config
+const basename = path.basename(__filename);
+const env = "development";
+const config = require("../configs/dbconfig.json")[env];
+
 const db = {};
 
-let sequelize;
-
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], {
-    ...config,
-    logging: false,
-  });
-} else {
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    {
-      ...config,
-      dialect: "mariadb", // mariadb',
-      //    , port : '37375'
-      //      dialectOptions: { timezone: 'Etc/GMT-9' },
-      define: { timestamps: false },
-      logging: false,
-      pool: {
-        max: 500,
-        //        max: 96000 , //  8000, // 500
-        min: 0,
-        //        acquire: 90000, // 10000 , // 60000,
-        acquire: 60000, // 6000, // 10000 , // 60000,
-        //        idle: 1000, // 10000,
-        idle: 10000, // 10000,
-      },
-    }
-    //  , define: {timestamps: false}
-  );
-}
+const sequelize = new Sequelize(config.database, config.user, config.password, {
+  host: config.host,
+  dialect: config.dialect,
+  port: config.port,
+  timezone: "+09:00",
+});
 
 fs.readdirSync(__dirname)
   .filter((file) => {

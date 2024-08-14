@@ -10,12 +10,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      createdat: {
+      created_at: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: sequelize.fn("current_timestamp"),
       },
-      updatedat: {
+      updated_at: {
         type: DataTypes.DATE,
         allowNull: true,
       },
@@ -67,6 +67,7 @@ module.exports = function (sequelize, DataTypes) {
     {
       sequelize,
       tableName: "orders",
+      timestamps: false,
     }
   );
 };

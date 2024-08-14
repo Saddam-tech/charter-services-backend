@@ -32,7 +32,7 @@ const s3 = new S3Client({
 
 router.post("/new", auth, upload.single("file"), async function (req, res) {
   let { id, username, uuid: useruuid } = req.decoded;
-  let { sequence, section, head, text, active } = req.body;
+  let { head, text, active } = req.body;
   if (!id || !username || !useruuid) {
     senderr(res, messages.USER_NOT_FOUND, null);
     return;
@@ -40,7 +40,7 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
   if (!req.file) {
     senderr(res, messages.NO_FILE, null);
     return;
-  } else if (!sequence || !section || !active) {
+  } else if (!head || !text || !active) {
     senderr(res, messages.ARG_MISSING, null);
     return;
   } else {
@@ -60,11 +60,9 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
       req.file?.originalname.length > 25
         ? req.file?.originalname.slice(0, 25)
         : req.file?.originalname;
-    await db["banners"].create({
+    await db["blogs"].create({
       name: image_name,
       uuid,
-      sequence,
-      section,
       active,
       head,
       text,
@@ -85,7 +83,7 @@ router.delete("/:uuid", auth, async function (req, res) {
       senderr(res, messages.NOT_FOUND, null);
       return;
     }
-    let item = await db["banners"].findOne({ raw: true, where: { uuid } });
+    let item = await db["blogs"].findOne({ raw: true, where: { uuid } });
     if (item) {
       const params = {
         Bucket: bucket_name,
@@ -102,7 +100,7 @@ router.delete("/:uuid", auth, async function (req, res) {
             senderr(res, messages.S3_DELETE_ERROR, 500);
           }
         });
-      await db["banners"].destroy({ where: { uuid } });
+      await db["blogs"].destroy({ where: { uuid } });
       sendresp(res, messages.DELETE_SUCCESS, 200, { uuid });
     } else {
       senderr(res, messages.NOT_FOUND, 500, { uuid });
@@ -125,7 +123,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
       senderr(res, messages.NOT_FOUND, null);
       return;
     }
-    let item = await db["banners"].findOne({ raw: true, where: { uuid } });
+    let item = await db["blogs"].findOne({ raw: true, where: { uuid } });
     if (item) {
       try {
         if (Object.entries(req.body).length > 0) {
@@ -134,7 +132,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
               item[key] = value;
             }
           }
-          await db["banners"].update({ ...item }, { where: { uuid } });
+          await db["blogs"].update({ ...item }, { where: { uuid } });
         }
       } catch (err) {
         senderr(res, messages.ERROR, null);
@@ -165,15 +163,11 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
 
 router.get("/all", async function (req, res) {
   try {
-    let { section } = req.query;
     let queryOptions = {
       raw: true,
       order: [["id", "DESC"]],
     };
-    if (section) {
-      queryOptions.where = { section };
-    }
-    let response = await db["banners"].findAll(queryOptions);
+    let response = await db["blogs"].findAll(queryOptions);
     let objectParams, objectCommand, urlToS3;
     for (let el of response) {
       objectParams = {
