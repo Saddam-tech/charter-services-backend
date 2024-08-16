@@ -12,11 +12,29 @@ const { v4: uuidv4 } = require("uuid");
 
 /* GET orders listing. */
 router.get("/", async function (req, res, next) {
-  let user = await db["orders"].findAll({
+  let queryParams = {};
+  if (Object.entries(req.query).length > 0) {
+    for (let [key, value] of Object.entries(req.query)) {
+      queryParams[key] = value;
+    }
+  }
+  let orders = await db["orders"].findAll({
     raw: true,
-    where: {},
+    where: { ...queryParams },
   });
-  sendresp(res, messages.SUCCESS, null, { user });
+  let users = [];
+  for (let [index, el] of orders.entries()) {
+    users[index] = db["users"].findOne({
+      raw: true,
+      where: { userid: el.userid },
+      attributes: { exclude: ["createdat", "updatedat"] },
+    });
+  }
+  users = await Promise.all(users);
+  orders = orders.map((el, i) =>
+    el.userid === users[i].userid ? { ...el, ...users[i] } : el
+  );
+  sendresp(res, messages.SUCCESS, null, { orders });
 });
 
 /* POST to orders listing. */
