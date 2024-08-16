@@ -31,45 +31,50 @@ const s3 = new S3Client({
 });
 
 router.post("/new", auth, upload.single("file"), async function (req, res) {
-  let { id, username, uuid: useruuid } = req.decoded;
-  let { sequence, section, head, text, active } = req.body;
-  if (!id || !username || !useruuid) {
-    senderr(res, messages.USER_NOT_FOUND, null);
-    return;
-  }
-  if (!req.file) {
-    senderr(res, messages.NO_FILE, null);
-    return;
-  } else if (!sequence || !section || !active) {
-    senderr(res, messages.ARG_MISSING, null);
-    return;
-  } else {
-    let file, params, uuid, command;
-    file = req.file;
-    uuid = generate_uuid_hash();
-    params = {
-      Bucket: bucket_name,
-      Key: uuid,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-    console.log("AWS-S3: File upload completed!", { params });
-    const image_name =
-      req.file?.originalname.length > 25
-        ? req.file?.originalname.slice(0, 25)
-        : req.file?.originalname;
-    await db["banners"].create({
-      name: image_name,
-      uuid,
-      sequence,
-      section,
-      active,
-      head,
-      text,
-    });
-    sendresp(res, messages.SUCCESS, 200);
+  try {
+    let { id, username, uuid: useruuid } = req.decoded;
+    let { sequence, section, head, text, active } = req.body;
+    if (!id || !username || !useruuid) {
+      senderr(res, messages.USER_NOT_FOUND, null);
+      return;
+    }
+    if (!req.file) {
+      senderr(res, messages.NO_FILE, null);
+      return;
+    } else if (!sequence || !section || !active) {
+      senderr(res, messages.ARG_MISSING, null);
+      return;
+    } else {
+      let file, params, uuid, command;
+      file = req.file;
+      uuid = generate_uuid_hash();
+      params = {
+        Bucket: bucket_name,
+        Key: uuid,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+      command = new PutObjectCommand(params);
+      await s3.send(command);
+      console.log("AWS-S3: File upload completed!", { params });
+      const image_name =
+        req.file?.originalname.length > 25
+          ? req.file?.originalname.slice(0, 25)
+          : req.file?.originalname;
+      await db["banners"].create({
+        name: image_name,
+        uuid,
+        sequence,
+        section,
+        active,
+        head,
+        text,
+      });
+      sendresp(res, messages.SUCCESS, 200);
+    }
+  } catch (err) {
+    console.log(err);
+    senderr(res, messages.ERROR, 500);
   }
 });
 
@@ -160,6 +165,7 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
     sendresp(res, messages.SUCCESS, 200);
   } catch (err) {
     console.log(err);
+    senderr(res, messages.ERROR, 500);
   }
 });
 
