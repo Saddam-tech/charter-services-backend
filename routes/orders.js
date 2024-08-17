@@ -5,10 +5,42 @@ const _ = require("lodash");
 const { senderr, sendresp } = require("../utils/rest");
 const db = require("../models");
 const { v4: uuidv4 } = require("uuid");
+const { auth } = require("../utils/authMiddleware");
+const { supportedOrderStats } = require("../utils/constants");
 // const { telegram_bot, chat_id } = require("../utils/telegram_bot");
 // const TelegramBot = require("node-telegram-bot-api");
 // const token = "6948817655:AAHhnItZLUJSDyutTyTp-V_ItbZywT0EfTY";
 // const telegram_bot = new TelegramBot(token, { polling: true });
+
+/* POST modify order status */
+router.put("/status-update", auth, async function (req, res, next) {
+  try {
+    let { orderid, status } = req.body;
+    let { id, username, uuid: useruuid } = req.decoded;
+    if (!orderid || !status) {
+      senderr(res, messages.NOT_FOUND, null);
+      return;
+    }
+    if (!id || !username || !useruuid) {
+      senderr(res, messages.NO_ADMIN_PRIVILEGE, null);
+      return;
+    }
+    let order = await db["orders"].findOne({ raw: true, where: { orderid } });
+    const isStatusSupported = supportedOrderStats.includes(parseInt(status));
+    if (isStatusSupported) {
+      if (order) {
+        await db["orders"].update({ status }, { where: { orderid } });
+        sendresp(res, messages.SUCCESS, 200, { orderid });
+      } else {
+        senderr(res, messages.NOT_FOUND, null);
+      }
+    } else {
+      senderr(res, messages.UNSUPPORTED_ORDER_STATUS, null);
+    }
+  } catch (err) {
+    senderr(res, messages.ERROR, 500);
+  }
+});
 
 /* GET orders listing. */
 router.get("/", async function (req, res, next) {
