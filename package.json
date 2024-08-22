@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "cross-env SYNC_DB=true node ./bin/www"
+    "dev": "cross-env SYNC_DB=false node ./bin/www"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.568.0",

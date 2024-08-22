@@ -9,9 +9,9 @@ const { sequelize } = require("./models");
 const indexRouter = require("./routes/index");
 const ordersRouter = require("./routes/orders");
 const usersRouter = require("./routes/users");
-const signinRouter = require("./routes/signin");
 const bannerRouter = require("./routes/banners");
 const blogsRouter = require("./routes/blogs");
+const adminRouter = require("./routes/admin");
 const cors = require("cors");
 const app = express();
 // view engine setup
@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/orders", ordersRouter);
-app.use("/admin", signinRouter);
+app.use("/admin", adminRouter);
 
 app.use("/banners", bannerRouter);
 
