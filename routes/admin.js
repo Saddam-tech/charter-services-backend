@@ -55,7 +55,7 @@ router.put("/update", auth, upload.single("file"), async (req, res) => {
         }
       }
       if (req.file) {
-        let file, params, command, getObjectParams, getObjectCommand;
+        let file, params, command;
         file = req.file;
         params = {
           Bucket: bucket_name,
@@ -66,15 +66,16 @@ router.put("/update", auth, upload.single("file"), async (req, res) => {
         command = new PutObjectCommand(params);
         await s3.send(command);
         console.log("AWS-S3: File upload completed!", { params });
-        getObjectParams = {
-          Bucket: bucket_name,
-          Key: uuid,
-        };
-        getObjectCommand = new GetObjectCommand(getObjectParams);
-        admin.profileImgUrl = await getSignedUrl(s3, getObjectCommand, {
-          expiresIn: 3600,
-        });
       }
+      let getObjectParams, getObjectCommand;
+      getObjectParams = {
+        Bucket: bucket_name,
+        Key: uuid,
+      };
+      getObjectCommand = new GetObjectCommand(getObjectParams);
+      admin.profileImgUrl = await getSignedUrl(s3, getObjectCommand, {
+        expiresIn: 3600,
+      });
       sendresp(res, messages.SUCCESS, 200, { admin });
     }
   } catch (err) {
