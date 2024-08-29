@@ -11,6 +11,7 @@ const ordersRouter = require("./routes/orders");
 const usersRouter = require("./routes/users");
 const bannerRouter = require("./routes/banners");
 const blogsRouter = require("./routes/blogs");
+const fleetRouter = require("./routes/fleet");
 const adminRouter = require("./routes/admin");
 const cors = require("cors");
 const app = express();
@@ -28,10 +29,9 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/orders", ordersRouter);
 app.use("/admin", adminRouter);
-
 app.use("/banners", bannerRouter);
-
 app.use("/blogs", blogsRouter);
+app.use("/fleet", fleetRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
