@@ -69,7 +69,7 @@ router.post("/new", auth, upload.single("file"), async function (req, res) {
       description,
       seats,
       uuid,
-      active,
+      active: active === "true" ? 1 : 0,
       type,
     });
     sendresp(res, messages.SUCCESS, 200);
@@ -134,7 +134,11 @@ router.put("/:uuid", auth, upload.single("file"), async function (req, res) {
         if (Object.entries(req.body).length > 0) {
           for (let [key, value] of Object.entries(req.body)) {
             if (key) {
-              item[key] = value;
+              if (key === "active") {
+                item[key] = value === "true" ? 1 : 0;
+              } else {
+                item[key] = value;
+              }
             }
           }
           await db["fleet"].update({ ...item }, { where: { uuid } });
