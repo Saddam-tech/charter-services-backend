@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
-    "admin_accounts",
+    "services",
     {
       id: {
         autoIncrement: true,
@@ -18,54 +18,30 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         defaultValue: sequelize.fn("current_timestamp"),
       },
-      firstname: {
+      name: {
         type: DataTypes.STRING(100),
         allowNull: true,
       },
-      lastname: {
-        type: DataTypes.STRING(100),
-        allowNull: true,
-      },
-      username: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING(150),
-        allowNull: false,
-      },
-      phone_1: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      phone_2: {
-        type: DataTypes.STRING(100),
-        allowNull: true,
-      },
-      address: {
-        type: DataTypes.STRING(150),
-        allowNull: true,
-      },
-      password: {
-        type: DataTypes.STRING(100),
+      uuid: {
+        type: DataTypes.STRING(255),
         allowNull: false,
       },
       active: {
         type: DataTypes.INTEGER(3),
         allowNull: false,
       },
-      uuid: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
+      text: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
       },
-      bio: {
-        type: DataTypes.TEXT,
+      head: {
+        type: DataTypes.STRING(200),
         allowNull: true,
       },
     },
     {
       sequelize,
-      tableName: "admin_accounts",
+      tableName: "services",
       timestamps: false,
     }
   );
