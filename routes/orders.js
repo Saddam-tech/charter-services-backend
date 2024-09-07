@@ -179,4 +179,38 @@ router.post("/", async function (req, res, next) {
   }
 });
 
+router.delete("/:orderId", auth, async (req, res) => {
+  try {
+    let { orderId } = req.params;
+    let { id, username, uuid: useruuid } = req.decoded;
+    if (!id || !username || !useruuid) {
+      senderr(res, messages.USER_NOT_FOUND, null);
+      return;
+    }
+    if (!orderId) {
+      senderr(res, messages.NOT_FOUND, null);
+      return;
+    }
+    let order = await db["orders"].findOne({ raw: true, where: { orderId } });
+    if (order) {
+      db["deleted_orders"]
+        .create({ ...order })
+        .then(async () => {
+          await db["orders"].destroy({ where: { orderId } });
+          sendresp(res, messages.DELETE_SUCCESS, 200, { orderId });
+        })
+        .catch((err) => {
+          console.log(err);
+          senderr(res, messages.ERROR, 500);
+        });
+    } else {
+      senderr(res, messages.NOT_FOUND, null);
+      return;
+    }
+  } catch (err) {
+    console.log(err);
+    senderr(res, messages.ERROR, 500);
+  }
+});
+
 module.exports = router;
