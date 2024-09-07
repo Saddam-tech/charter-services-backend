@@ -14,6 +14,7 @@ const blogsRouter = require("./routes/blogs");
 const servicesRouter = require("./routes/services");
 const fleetRouter = require("./routes/fleet");
 const adminRouter = require("./routes/admin");
+const { telegram_listener } = require("./utils/telegram_bot");
 const cors = require("cors");
 const app = express();
 // view engine setup
@@ -53,6 +54,8 @@ sequelize
   .catch((err) => {
     console.log("Couldn't connect to the database! ", err);
   });
+
+telegram_listener();
 
 // error handler
 app.use(function (err, req, res, next) {

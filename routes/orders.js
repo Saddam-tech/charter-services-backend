@@ -7,10 +7,7 @@ const db = require("../models");
 const { v4: uuidv4 } = require("uuid");
 const { auth } = require("../utils/authMiddleware");
 const { supportedOrderStats } = require("../utils/constants");
-// const { telegram_bot, chat_id } = require("../utils/telegram_bot");
-// const TelegramBot = require("node-telegram-bot-api");
-// const token = "6948817655:AAHhnItZLUJSDyutTyTp-V_ItbZywT0EfTY";
-// const telegram_bot = new TelegramBot(token, { polling: true });
+const { telegram_bot } = require("../utils/telegram_bot");
 
 /* POST modify order status */
 router.put("/status-update", auth, async function (req, res, next) {
@@ -131,6 +128,7 @@ router.post("/", async function (req, res, next) {
       let userid = uuidv4();
       let orderid = uuidv4();
       let order = await db["orders"].create({
+        status: 0,
         active: 1,
         userid,
         orderid,
@@ -154,25 +152,31 @@ router.post("/", async function (req, res, next) {
       console.log("INSERTING INTO ORDERS, USERS TABLE...");
       console.log({ order: order.dataValues, user: user.dataValues });
       sendresp(res, messages.NEW_ORDER_SUCCESS, null, { order, user });
-      // send a telegram message here ...
-      // telegram_bot.sendMessage(
-      //   chat_id,
-      //   `
-      //   New Order:
-      //     type: ${type},
-      //     Service Date: ${date},
-      //     Service time: ${time},
-      //     Number of people: ${n_ppl},
-      //     Car type: ${car_type},
-      //     Pick-up location: ${pickup_location},
-      //     Drop-off location: ${dropoff_location},
-      //     Firstname: ${firstname},
-      //     Lastname: ${lastname},
-      //     Email: ${email},
-      //     Phone number: ${phonenumber},
-      //     Special request: ${special_req}
-      //   `
-      // );
+      let bot_users = await db["bot_users"].findAll({ raw: true });
+      console.log({ bot_users });
+      if (bot_users.length > 0) {
+        for (let bot_user of bot_users) {
+          // send a telegram message here ...
+          telegram_bot.sendMessage(
+            bot_user.chat_id,
+            `
+            New Order:
+              type: ${type},
+              Service Date: ${date},
+              Service time: ${time},
+              Number of people: ${n_ppl},
+              Car type: ${car_type},
+              Pick-up location: ${pickup_location},
+              Drop-off location: ${dropoff_location},
+              Firstname: ${firstname},
+              Lastname: ${lastname},
+              Email: ${email},
+              Phone number: ${phonenumber},
+              Special request: ${special_req}
+            `
+          );
+        }
+      }
     }
   } catch (err) {
     console.log(err);
