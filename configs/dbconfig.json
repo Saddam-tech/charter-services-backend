@@ -1,7 +1,7 @@
 {
   "development": {
     "host": "127.0.0.1",
-    "user": "root",
+    "user": "charter_services",
     "port": "3306",
     "password": "samtech",
     "database": "charter_services",
